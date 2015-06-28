@@ -1,3 +1,4 @@
-rm *.class
-javac *.java
+rm target/*.class
+javac -d target/ src/*.java
+cd target
 java JixTerminal

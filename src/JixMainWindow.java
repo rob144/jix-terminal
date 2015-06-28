@@ -4,10 +4,15 @@ import javax.swing.border.EmptyBorder;
 import java.awt.event.KeyListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseMotionAdapter;
 import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 
 public class JixMainWindow extends JFrame {
+
+    int mpX, mpY;
 
     public JixMainWindow(){
         super("JIX TERMINAL");
@@ -32,9 +37,11 @@ public class JixMainWindow extends JFrame {
         mainGui.add(topBar, gbConstr);
 
         JixConsole console = new JixConsole();
-        JScrollPane scrollPane = new JScrollPane(console,
-        JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
-        JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        JScrollPane scrollPane = new JScrollPane(
+            console,
+            JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
+            JScrollPane.HORIZONTAL_SCROLLBAR_NEVER
+        );
         scrollPane.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
 
         gbConstr.fill = GridBagConstraints.BOTH;
@@ -45,6 +52,25 @@ public class JixMainWindow extends JFrame {
         mainGui.add(scrollPane, gbConstr);
 
         this.addWindowListener(new FrameListener());
+
+        this.addMouseListener(new MouseAdapter(){
+            @Override
+            public void mousePressed( MouseEvent e ){
+                mpX = e.getX();
+                mpY = e.getY();
+            }
+        });
+
+        this.addMouseMotionListener(new MouseMotionAdapter() {
+            @Override
+            public void mouseDragged( MouseEvent e ) {
+                setLocation(
+                    getLocation().x + e.getX() - mpX,
+                    getLocation().y + e.getY() - mpY 
+                );
+            }
+        });
+
         this.setUndecorated(true);
         this.setLayout(new GridLayout(0, 1));
         this.setBackground(new Color(0,0,0,0));
@@ -55,6 +81,7 @@ public class JixMainWindow extends JFrame {
         this.setPreferredSize(new Dimension(400,400));
         this.pack();
         this.setVisible(true);
+
         console.append(Color.WHITE, "WELCOME TO JIX TERMINAL!\n");
         console.update(console.getGraphics());
     }
