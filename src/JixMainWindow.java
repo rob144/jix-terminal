@@ -16,7 +16,7 @@ public class JixMainWindow extends JFrame {
 
     public JixMainWindow(){
         super("JIX TERMINAL");
-        
+
         JPanel mainGui = new JPanel();
         mainGui.setLayout(new GridBagLayout());
         mainGui.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
@@ -24,9 +24,34 @@ public class JixMainWindow extends JFrame {
 
         GridBagConstraints gbConstr = new GridBagConstraints();
 
-        JPanel topBar = new JPanel(new BorderLayout());
+        JPanel topBar = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         topBar.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
         topBar.setBackground(Color.BLUE);
+
+        JButton btnMinimize = new JButton("-");
+        btnMinimize.setPreferredSize(new Dimension(20, 20));
+        JButton btnMaximize = new JButton("+");
+        btnMaximize.setPreferredSize(new Dimension(20, 20));
+        JButton btnClose = new JButton("x");
+        btnClose.setPreferredSize(new Dimension(20, 20));
+
+        btnClose.setAlignmentX(Component.RIGHT_ALIGNMENT);
+        btnMinimize.setAlignmentX(Component.RIGHT_ALIGNMENT);
+        btnMaximize.setAlignmentX(Component.RIGHT_ALIGNMENT);
+
+        btnMinimize.setBorder(null);
+        btnMinimize.setBorderPainted(false);
+        btnMinimize.setMargin(new Insets(0,0,0,0));
+        btnMaximize.setBorder(null);
+        btnMaximize.setBorderPainted(false);
+        btnMaximize.setMargin(new Insets(0,0,0,0));
+        btnClose.setBorder(null);
+        btnClose.setBorderPainted(false);
+        btnClose.setMargin(new Insets(0,0,0,0));
+
+        topBar.add(btnMinimize);
+        topBar.add(btnMaximize);
+        topBar.add(btnClose);
 
         gbConstr.fill = GridBagConstraints.HORIZONTAL;
         gbConstr.anchor = GridBagConstraints.NORTHWEST;
@@ -66,7 +91,7 @@ public class JixMainWindow extends JFrame {
             public void mouseDragged( MouseEvent e ) {
                 setLocation(
                     getLocation().x + e.getX() - mpX,
-                    getLocation().y + e.getY() - mpY 
+                    getLocation().y + e.getY() - mpY
                 );
             }
         });
@@ -88,7 +113,7 @@ public class JixMainWindow extends JFrame {
 }
 
 class FrameListener extends WindowAdapter {
-    
+
     public void windowOpened(WindowEvent e){
         JFrame frame = (JFrame)e.getComponent();
         ArrayList<Component> comps = getAllComponents(frame);
@@ -97,7 +122,7 @@ class FrameListener extends WindowAdapter {
                 JixConsole console = (JixConsole)comp;
                 console.append(Color.WHITE, System.getProperty("user.name") + "$ ");
             }
-        }                            
+        }
     }
     public ArrayList<Component> getAllComponents(final Container c) {
         Component[] comps = c.getComponents();
