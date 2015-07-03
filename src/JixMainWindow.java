@@ -8,6 +8,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseMotionAdapter;
 import java.awt.event.WindowEvent;
+import java.awt.geom.Ellipse2D;
 import java.util.ArrayList;
 
 public class JixMainWindow extends JFrame {
@@ -17,50 +18,24 @@ public class JixMainWindow extends JFrame {
     public JixMainWindow(){
         super("JIX TERMINAL");
 
+        /* Panel to contain main gui */
         JPanel mainGui = new JPanel();
         mainGui.setLayout(new GridBagLayout());
         mainGui.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
         mainGui.setBackground(Color.BLACK);
 
-        GridBagConstraints gbConstr = new GridBagConstraints();
+        /* Build top bar with close, minimize and maximize buttons */
+        WindowTopBar topBar = new WindowTopBar();
+        GridBagConstraints gbcTopBar = new GridBagConstraints();
+        gbcTopBar.fill = GridBagConstraints.HORIZONTAL;
+        gbcTopBar.anchor = GridBagConstraints.NORTHWEST;
+        gbcTopBar.gridx = 0;
+        gbcTopBar.gridy = 0;
+        gbcTopBar.weightx = 1;
+        gbcTopBar.ipady = 0;
+        mainGui.add(topBar, gbcTopBar);
 
-        JPanel topBar = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        topBar.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
-        topBar.setBackground(Color.BLUE);
-
-        JButton btnMinimize = new JButton("-");
-        btnMinimize.setPreferredSize(new Dimension(20, 20));
-        JButton btnMaximize = new JButton("+");
-        btnMaximize.setPreferredSize(new Dimension(20, 20));
-        JButton btnClose = new JButton("x");
-        btnClose.setPreferredSize(new Dimension(20, 20));
-
-        btnClose.setAlignmentX(Component.RIGHT_ALIGNMENT);
-        btnMinimize.setAlignmentX(Component.RIGHT_ALIGNMENT);
-        btnMaximize.setAlignmentX(Component.RIGHT_ALIGNMENT);
-
-        btnMinimize.setBorder(null);
-        btnMinimize.setBorderPainted(false);
-        btnMinimize.setMargin(new Insets(0,0,0,0));
-        btnMaximize.setBorder(null);
-        btnMaximize.setBorderPainted(false);
-        btnMaximize.setMargin(new Insets(0,0,0,0));
-        btnClose.setBorder(null);
-        btnClose.setBorderPainted(false);
-        btnClose.setMargin(new Insets(0,0,0,0));
-
-        topBar.add(btnMinimize);
-        topBar.add(btnMaximize);
-        topBar.add(btnClose);
-
-        gbConstr.fill = GridBagConstraints.HORIZONTAL;
-        gbConstr.anchor = GridBagConstraints.NORTHWEST;
-        gbConstr.gridx = 0;
-        gbConstr.gridy = 0;
-        gbConstr.weightx = 1;
-        gbConstr.ipady = 20;
-        mainGui.add(topBar, gbConstr);
-
+        /* Build console with vertical scroll pane */
         JixConsole console = new JixConsole();
         JScrollPane scrollPane = new JScrollPane(
             console,
@@ -69,15 +44,18 @@ public class JixMainWindow extends JFrame {
         );
         scrollPane.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
 
-        gbConstr.fill = GridBagConstraints.BOTH;
-        gbConstr.gridx = 0;
-        gbConstr.gridy = 1;
-        gbConstr.weightx = 1;
-        gbConstr.weighty = 1;
-        mainGui.add(scrollPane, gbConstr);
+        GridBagConstraints gbcScrollPane = new GridBagConstraints();
+        gbcScrollPane.fill = GridBagConstraints.BOTH;
+        gbcScrollPane.gridx = 0;
+        gbcScrollPane.gridy = 1;
+        gbcScrollPane.weightx = 1;
+        gbcScrollPane.weighty = 1;
+        mainGui.add(scrollPane, gbcScrollPane);
 
+        /* Displan username text after window load */
         this.addWindowListener(new FrameListener());
 
+        /* Event listeners for clicking and dragging window */
         this.addMouseListener(new MouseAdapter(){
             @Override
             public void mousePressed( MouseEvent e ){
@@ -85,7 +63,6 @@ public class JixMainWindow extends JFrame {
                 mpY = e.getY();
             }
         });
-
         this.addMouseMotionListener(new MouseMotionAdapter() {
             @Override
             public void mouseDragged( MouseEvent e ) {
@@ -100,16 +77,105 @@ public class JixMainWindow extends JFrame {
         this.setLayout(new GridLayout(0, 1));
         this.setBackground(new Color(0,0,0,0));
         this.getRootPane().setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
-        this.add(mainGui);
+
         this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         this.setLocationByPlatform(true);
         this.setPreferredSize(new Dimension(400,400));
+
+        this.add(mainGui);
+        
         this.pack();
         this.setVisible(true);
 
         console.append(Color.WHITE, "WELCOME TO JIX TERMINAL!\n");
         console.update(console.getGraphics());
     }
+}
+
+class WindowTopBar extends JPanel {
+
+	public WindowTopBar(){
+		super(new FlowLayout(FlowLayout.RIGHT));
+
+		this.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
+		this.setBackground(Color.BLUE);
+
+		JButton btnMinimize = new RoundButton(new Dimension(16, 16), Color.YELLOW);
+		JButton btnMaximize = new RoundButton(new Dimension(16, 16), Color.GREEN);
+		JButton btnClose = new RoundButton(new Dimension(16, 16), Color.RED);
+
+		btnClose.setAlignmentX(Component.RIGHT_ALIGNMENT);
+		btnMinimize.setAlignmentX(Component.RIGHT_ALIGNMENT);
+		btnMaximize.setAlignmentX(Component.RIGHT_ALIGNMENT);
+
+		btnMinimize.setBorder(null);
+		btnMinimize.setBorderPainted(false);
+		btnMinimize.setMargin(new Insets(0,0,0,0));
+
+		btnMaximize.setBorder(null);
+		btnMaximize.setBorderPainted(false);
+		btnMaximize.setMargin(new Insets(0,0,0,0));
+
+		btnClose.setBorder(null);
+		btnClose.setBorderPainted(false);
+		btnClose.setMargin(new Insets(0,0,0,0));
+
+		this.add(btnMinimize);
+		this.add(btnMaximize);
+		this.add(btnClose);
+	}
+}
+
+class RoundButton extends JButton {
+
+	protected Shape shape, base;
+	protected Color thisColor;
+
+	public RoundButton(Dimension size, Color color) {
+		thisColor = color;
+		this.setModel(new DefaultButtonModel());
+		this.setBorder(BorderFactory.createEmptyBorder(1,1,1,1));
+		this.setBackground(Color.WHITE);
+		this.setContentAreaFilled(true);
+		this.setFocusPainted(false);
+		this.setAlignmentY(Component.TOP_ALIGNMENT);
+		this.setPreferredSize(size);
+		initShape(size);
+	}
+	
+	protected void initShape(Dimension size) {
+		if(!getBounds().equals(base)) {
+		  	base = getBounds();
+		  	shape = new Ellipse2D.Float(0, 0, size.width - 1, size.height - 1);
+		}
+	}
+
+	@Override protected void paintComponent(Graphics g) {
+		Graphics2D g2 = (Graphics2D)g;
+		g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+		                    RenderingHints.VALUE_ANTIALIAS_ON);
+		g2.setColor(thisColor);
+		g2.fill(shape);
+		g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+		                    RenderingHints.VALUE_ANTIALIAS_OFF);
+	}
+
+/*
+	@Override protected void paintBorder(Graphics g) {
+		Graphics2D g2 = (Graphics2D)g;
+		g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+		                    RenderingHints.VALUE_ANTIALIAS_ON);
+		g2.setColor(thisColor);
+		g2.setStroke(new BasicStroke(1.0f));
+		g2.draw(shape);
+		g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+		                    RenderingHints.VALUE_ANTIALIAS_OFF);
+	}
+*/
+	@Override public boolean contains(int x, int y) {
+		return shape.contains(x, y);
+		//or return super.contains(x, y) && ((image.getRGB(x, y) >> 24) & 0xff) > 0;
+	}
 }
 
 class FrameListener extends WindowAdapter {
