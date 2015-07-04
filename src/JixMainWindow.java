@@ -1,6 +1,8 @@
 import java.awt.*;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
@@ -53,7 +55,7 @@ public class JixMainWindow extends JFrame {
         mainGui.add(scrollPane, gbcScrollPane);
 
         /* Displan username text after window load */
-        this.addWindowListener(new FrameListener());
+        this.addWindowListener(new MainWindowListener());
 
         /* Event listeners for clicking and dragging window */
         this.addMouseListener(new MouseAdapter(){
@@ -94,91 +96,91 @@ public class JixMainWindow extends JFrame {
 
 class WindowTopBar extends JPanel {
 
-	public WindowTopBar(){
-		super(new FlowLayout(FlowLayout.RIGHT));
+    public WindowTopBar(){
+        super(new FlowLayout(FlowLayout.RIGHT));
 
-		this.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
-		this.setBackground(Color.BLUE);
+        this.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
+        this.setBackground(Color.BLUE);
 
-		JButton btnMinimize = new RoundButton(new Dimension(16, 16), Color.YELLOW);
-		JButton btnMaximize = new RoundButton(new Dimension(16, 16), Color.GREEN);
-		JButton btnClose = new RoundButton(new Dimension(16, 16), Color.RED);
+        JButton btnMinimize = new RoundButton(new Dimension(16, 16), Color.YELLOW);
+        JButton btnMaximize = new RoundButton(new Dimension(16, 16), Color.GREEN);
+        JButton btnClose = new RoundButton(new Dimension(16, 16), Color.RED);
 
-		btnClose.setAlignmentX(Component.RIGHT_ALIGNMENT);
-		btnMinimize.setAlignmentX(Component.RIGHT_ALIGNMENT);
-		btnMaximize.setAlignmentX(Component.RIGHT_ALIGNMENT);
+        btnMinimize.addActionListener(new ActionListener(){
+            public void actionPerformed(ActionEvent e){
+                //TODO: minimize window
+            }
+        });
 
-		btnMinimize.setBorder(null);
-		btnMinimize.setBorderPainted(false);
-		btnMinimize.setMargin(new Insets(0,0,0,0));
+        btnMaximize.addActionListener(new ActionListener(){
+            public void actionPerformed(ActionEvent e){
+                //TODO: fix this to make window maximize
+                JComponent comp = (JComponent)e.getSource();
+                JFrame topFrame = (JFrame) SwingUtilities.getWindowAncestor(comp);
+                topFrame.setState(Frame.MAXIMIZED_BOTH);
+            }
+        });
 
-		btnMaximize.setBorder(null);
-		btnMaximize.setBorderPainted(false);
-		btnMaximize.setMargin(new Insets(0,0,0,0));
+        btnClose.addActionListener(new ActionListener(){
+            public void actionPerformed(ActionEvent e){
+                System.exit(0);
+            }
+        });
 
-		btnClose.setBorder(null);
-		btnClose.setBorderPainted(false);
-		btnClose.setMargin(new Insets(0,0,0,0));
+        this.addButton(btnMinimize);
+        this.addButton(btnMaximize);
+        this.addButton(btnClose);
+    }
 
-		this.add(btnMinimize);
-		this.add(btnMaximize);
-		this.add(btnClose);
-	}
+    private void addButton(JButton btn){
+        btn.setAlignmentX(Component.RIGHT_ALIGNMENT);
+        btn.setBorder(null);
+        btn.setBorderPainted(false);
+        btn.setMargin(new Insets(0,0,0,0));
+        this.add(btn);
+    }
 }
 
 class RoundButton extends JButton {
 
-	protected Shape shape, base;
-	protected Color thisColor;
+    protected Shape shape, base;
+    protected Color thisColor;
 
-	public RoundButton(Dimension size, Color color) {
-		thisColor = color;
-		this.setModel(new DefaultButtonModel());
-		this.setBorder(BorderFactory.createEmptyBorder(1,1,1,1));
-		this.setBackground(Color.WHITE);
-		this.setContentAreaFilled(true);
-		this.setFocusPainted(false);
-		this.setAlignmentY(Component.TOP_ALIGNMENT);
-		this.setPreferredSize(size);
-		initShape(size);
-	}
-	
-	protected void initShape(Dimension size) {
-		if(!getBounds().equals(base)) {
-		  	base = getBounds();
-		  	shape = new Ellipse2D.Float(0, 0, size.width - 1, size.height - 1);
-		}
-	}
+    public RoundButton(Dimension size, Color color) {
+        thisColor = color;
+        this.setModel(new DefaultButtonModel());
+        this.setBorder(BorderFactory.createEmptyBorder(1,1,1,1));
+        this.setBackground(Color.WHITE);
+        this.setContentAreaFilled(true);
+        this.setFocusPainted(false);
+        this.setAlignmentY(Component.TOP_ALIGNMENT);
+        this.setPreferredSize(size);
+        initShape(size);
+    }
+    
+    protected void initShape(Dimension size) {
+        if(!getBounds().equals(base)) {
+              base = getBounds();
+              shape = new Ellipse2D.Float(0, 0, size.width - 1, size.height - 1);
+        }
+    }
 
-	@Override protected void paintComponent(Graphics g) {
-		Graphics2D g2 = (Graphics2D)g;
-		g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-		                    RenderingHints.VALUE_ANTIALIAS_ON);
-		g2.setColor(thisColor);
-		g2.fill(shape);
-		g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-		                    RenderingHints.VALUE_ANTIALIAS_OFF);
-	}
+    @Override protected void paintComponent(Graphics g) {
+        Graphics2D g2 = (Graphics2D)g;
+        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+                            RenderingHints.VALUE_ANTIALIAS_ON);
+        g2.setColor(thisColor);
+        g2.fill(shape);
+        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+                            RenderingHints.VALUE_ANTIALIAS_OFF);
+    }
 
-/*
-	@Override protected void paintBorder(Graphics g) {
-		Graphics2D g2 = (Graphics2D)g;
-		g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-		                    RenderingHints.VALUE_ANTIALIAS_ON);
-		g2.setColor(thisColor);
-		g2.setStroke(new BasicStroke(1.0f));
-		g2.draw(shape);
-		g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-		                    RenderingHints.VALUE_ANTIALIAS_OFF);
-	}
-*/
-	@Override public boolean contains(int x, int y) {
-		return shape.contains(x, y);
-		//or return super.contains(x, y) && ((image.getRGB(x, y) >> 24) & 0xff) > 0;
-	}
+    @Override public boolean contains(int x, int y) {
+        return shape.contains(x, y);
+    }
 }
 
-class FrameListener extends WindowAdapter {
+class MainWindowListener extends WindowAdapter {
 
     public void windowOpened(WindowEvent e){
         JFrame frame = (JFrame)e.getComponent();
