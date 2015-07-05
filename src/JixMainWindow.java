@@ -10,6 +10,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseMotionAdapter;
 import java.awt.event.WindowEvent;
+import java.awt.geom.RoundRectangle2D;
 import java.awt.geom.Ellipse2D;
 import java.util.ArrayList;
 
@@ -24,7 +25,7 @@ public class JixMainWindow extends JFrame {
         JPanel mainGui = new JPanel();
         mainGui.setLayout(new GridBagLayout());
         mainGui.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
-        mainGui.setBackground(Color.BLACK);
+        //mainGui.setBackground(Color.BLACK);
 
         /* Build top bar with close, minimize and maximize buttons */
         WindowTopBar topBar = new WindowTopBar();
@@ -34,8 +35,24 @@ public class JixMainWindow extends JFrame {
         gbcTopBar.gridx = 0;
         gbcTopBar.gridy = 0;
         gbcTopBar.weightx = 1;
+        gbcTopBar.weighty = 0.1;
         gbcTopBar.ipady = 0;
         mainGui.add(topBar, gbcTopBar);
+
+        JPanel consoleBox = new JPanel();
+        consoleBox.setLayout(new GridBagLayout());
+        consoleBox.setBorder(BorderFactory.createEmptyBorder(2, 2, 2, 2));
+        consoleBox.setOpaque(false);
+
+        GridBagConstraints gbcConsoleBox = new GridBagConstraints();
+        gbcConsoleBox.fill = GridBagConstraints.BOTH;
+        gbcConsoleBox.anchor = GridBagConstraints.NORTHWEST;
+        gbcConsoleBox.gridx = 0;
+        gbcConsoleBox.gridy = 1;
+        gbcConsoleBox.weightx = 1;
+        gbcConsoleBox.weighty = 0.9;
+        gbcConsoleBox.ipady = 0;
+        mainGui.add(consoleBox, gbcConsoleBox);
 
         /* Build console with vertical scroll pane */
         JixConsole console = new JixConsole();
@@ -48,11 +65,13 @@ public class JixMainWindow extends JFrame {
 
         GridBagConstraints gbcScrollPane = new GridBagConstraints();
         gbcScrollPane.fill = GridBagConstraints.BOTH;
+        gbcScrollPane.anchor = GridBagConstraints.NORTHWEST;
         gbcScrollPane.gridx = 0;
-        gbcScrollPane.gridy = 1;
+        gbcScrollPane.gridy = 0;
         gbcScrollPane.weightx = 1;
         gbcScrollPane.weighty = 1;
-        mainGui.add(scrollPane, gbcScrollPane);
+        gbcScrollPane.ipady = 0;
+        consoleBox.add(scrollPane, gbcScrollPane);
 
         /* Displan username text after window load */
         this.addWindowListener(new MainWindowListener());
@@ -138,6 +157,17 @@ class WindowTopBar extends JPanel {
         btn.setBorderPainted(false);
         btn.setMargin(new Insets(0,0,0,0));
         this.add(btn);
+    }
+
+    @Override protected void paintComponent(Graphics g) {
+        Graphics2D g2 = (Graphics2D)g;
+        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+                            RenderingHints.VALUE_ANTIALIAS_ON);
+        g2.setColor(Color.BLUE);
+        //TODO: use drawarc and draw line to make only top corners round
+        g2.fill(new RoundRectangle2D.Double(0, 0, getWidth() - 1, getHeight() - 1, 10, 10));
+        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+                            RenderingHints.VALUE_ANTIALIAS_OFF);
     }
 }
 
